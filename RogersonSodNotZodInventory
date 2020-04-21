@@ -1,0 +1,295 @@
+/* Nicholas Rogerson
+   CPT 187
+   manages inventory
+   7 April 2020 
+ */
+
+package edu.cpt187.rogerson.participation;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Inventory
+{
+	private final String [] DISCOUNT_NAMES = {"Member", "Senior", "No Discount"};
+	private final double [] DISCOUNT_RATES = {0.25, 0.15, 0.0};
+	private final String [] PRIZE_NAMES = {"Lion", "Tiger", "Bear"};
+	private final int MAX_RECORDS = 5;
+	private final int NOT_FOUND = -1;
+	private final int RESET_VALUE = 0;
+	private int[] itemIDs = new int [MAX_RECORDS];
+	private String[] itemNames = new String [MAX_RECORDS];
+	private double[] itemPrices = new double[MAX_RECORDS];
+	private int[] orderQuantity = new int[MAX_RECORDS];
+	private double[] orderTotal = new double[MAX_RECORDS];
+	private int[] inStockCounts = new int[MAX_RECORDS];
+	private int itemSearchIndex = 0;
+	private int recordCount = 0;
+	private Random prizeGenerator = new Random();
+
+	// constructor
+	Inventory()
+	{
+
+	} // end constructor
+
+	// set reduceStock
+	public void setReduceStock(int borrowedHowMany)
+	{
+		inStockCounts[itemSearchIndex] = inStockCounts[itemSearchIndex]- borrowedHowMany;
+	} // end set reduce stock
+
+	// set load items from file
+	public void setLoadItems(String borrowedFileName)
+	{
+		recordCount = RESET_VALUE;
+		try
+		{
+			Scanner infile = new Scanner(new FileInputStream(borrowedFileName));
+
+			while (infile.hasNext() == true && recordCount < MAX_RECORDS)
+			{
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				inStockCounts[recordCount] = infile.nextInt();
+				recordCount++;
+			}// end while
+
+			setBubbleSort();
+			
+			infile.close();
+
+		} // end try
+		catch (IOException ex)
+		{
+			recordCount = NOT_FOUND;
+		} // end catch
+	} // end set load items
+
+	// set load items from file 0verload
+	public void setLoadItems(String borrowedFileName, int borrowedSize)
+	{
+		recordCount = RESET_VALUE;
+		try
+		{
+			Scanner infile = new Scanner(new FileInputStream(borrowedFileName));
+
+			while (infile.hasNext() == true && recordCount < borrowedSize)
+			{
+				itemIDs[recordCount] = infile.nextInt();
+				itemNames[recordCount] = infile.next();
+				itemPrices[recordCount] = infile.nextDouble();
+				inStockCounts[recordCount] = infile.nextInt();
+				recordCount++;
+			}// end while
+
+			infile.close();
+
+		} // end try
+		catch (IOException ex)
+		{
+			recordCount = NOT_FOUND;
+		} // end catch
+	} // end set load items Overload
+
+	// set  search index
+	public void setSearchIndex(int borrowedTargetID)
+	{
+		itemSearchIndex = getSearchResults(borrowedTargetID);		
+	} // end set search index
+
+	// set bubble sort
+	public void setBubbleSort()
+	{
+		final int ZERO = 0;
+		boolean swap = false;
+		int last = RESET_VALUE;
+		int index = RESET_VALUE;
+
+		last = recordCount - 1;
+
+		while(last > ZERO)
+		{ // run sort
+			index = ZERO;
+			swap = false;
+
+			while(index< last)
+			{
+				if (itemIDs[index] > itemIDs[index+1])
+				{// swap
+					setSwapArrayElements(index);
+					swap = true;
+				}// end swap
+				index++;
+			}// end while index < last
+			if (swap == false)
+			{
+				last = ZERO;
+			} //end if last  = false
+			else
+			{
+				last--;
+			} // end last loop
+		} // end sort
+
+	}// end bubble sort
+
+	// set swap array elements
+	public void setSwapArrayElements(int borrowedIndex)
+	{
+		int tempValue = 0;
+
+		tempValue = itemIDs[borrowedIndex];
+		itemIDs[borrowedIndex] = itemIDs[borrowedIndex+1];
+		itemIDs[borrowedIndex+1] = tempValue;
+	} // end set swap array elements
+
+	// get in stock counts
+	public int[] getInStockCounts()
+	{
+		return inStockCounts;
+	} // end get in stock counts
+
+	// get item ids
+	public int[] getItemIDs()
+	{ 
+		return itemIDs;
+	}// end get item ids
+
+	// get item names array
+	public String[] getItemNames()
+	{
+		return itemNames;
+
+	}	// end get  item names array
+
+	// get item prices array
+	public double[] getItemPrices()
+	{
+		return itemPrices;
+
+	}	// end get ITEM PRICES ARRAY
+
+	// get discount names array
+	public String[] getDiscountNames()
+	{
+		return DISCOUNT_NAMES;
+
+	}	// end get  DISCOUNT names array
+
+	// get discount rates array
+	public double[] getDiscountRates()
+	{
+		return DISCOUNT_RATES;
+
+	}	// end get Discount rates ARRAY
+
+	// get orderQuantities
+	public int[] getOrderQuantities()
+	{
+		return orderQuantity;
+	} // end get order quantities
+
+	// get order totals
+	public double[] getOrderTotals()
+	{
+		return orderTotal;
+	} // end get order totals
+
+	// get prize name array
+	public String[] getPrizeNames()
+	{
+		return PRIZE_NAMES;
+	} // END GET PRIZE NAMES ARRAY
+
+	// GET random number
+	public int getRandomNumber()
+	{
+		return prizeGenerator.nextInt(PRIZE_NAMES.length);
+	} // end get random number
+
+	// get max records
+	public int getMaxRecords()
+	{
+		return MAX_RECORDS;
+	} // END get max records
+
+	// get item search index
+	public int getItemSearchIndex()
+	{
+		return itemSearchIndex;
+	} // end get item search index
+
+	// get record count
+	public int getRecordCount()
+	{
+		return recordCount;
+	} // // end get record count
+
+	// get search results
+	public int getSearchResults(int borrowedBorrowedID)
+	{
+		int first = 0;
+		int last = 0 ;
+		int mid = 0;
+		boolean found = false;
+
+		last = recordCount-1;
+		
+		while(first <= last && found == false)
+		{// run search
+			mid = (first + last)/ 2;
+
+			// test for mid
+			if(itemIDs[mid] == borrowedBorrowedID)
+			{
+				found = true;
+			}// end if found
+			else
+			{// check < or >
+				if (itemIDs[mid] < borrowedBorrowedID)
+				{		
+
+					first = mid++;
+				}// end <
+				else
+				{				
+					System.out.println("test");
+
+					last = mid--;
+				} // end >
+			} // end  test  for mid
+			
+		} // end search
+		
+		if (found == false)
+		{
+			mid = NOT_FOUND;
+			
+		} // END SET TO NOT FOUND
+
+		return mid;
+		
+	} // end get search results
+
+} // end inventory class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
