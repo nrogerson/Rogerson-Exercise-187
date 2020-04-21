@@ -1,0 +1,62 @@
+/* Nicholas Rogerson
+   CPT 187
+   Writes order to file
+   7 April 2020 
+ */
+
+package edu.cpt187.rogerson.participation;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+public class OrderWriter 
+{
+	private final boolean FOUND = true;
+	private final boolean NOT_FOUND = false;
+	private boolean fileFoundFlag = false;
+	private String masterFileName = "";
+	private int recordCount = 0;
+
+	OrderWriter(String borrowedFileName)
+	{
+		masterFileName = borrowedFileName;
+	} // end constructor
+
+	// set write order
+	public void setWriteOrder(int borrowedItemID, String borrowedItemName, double borrowedItemPrice, int borrowedQuantity, double borrowedOrderCost)
+	{
+		try 
+		{
+			PrintWriter filePW = new PrintWriter(new FileWriter(masterFileName, true));
+			filePW.printf("%n%d\t%s\t%f\t%d\t%f%n", borrowedItemID, borrowedItemName, borrowedItemPrice, borrowedQuantity, borrowedOrderCost);
+			fileFoundFlag = FOUND;
+			recordCount++;
+			filePW.close();
+		} // end try
+		catch (IOException ex)
+		{
+			fileFoundFlag = NOT_FOUND;
+		} // end catch
+	} // end set write order
+
+	// get file found flag
+	public boolean getFileFoundFlag()
+	{
+		return fileFoundFlag;
+	} // end get file found flag
+
+	// get File name
+	public String getFileName()
+	{
+		return masterFileName; 
+	} // end get file name
+
+	// get record count
+	public int getRecordCount()
+	{
+		return recordCount;
+	} // end get record count
+
+} // end order writer class
+
